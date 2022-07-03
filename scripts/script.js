@@ -17,6 +17,7 @@ let operation = NaN;
 let positiveNegative = '+';
 let lastPressed;
 let memoryValue = 0;
+let memoryRecalled = false;
 
 clearEntry.addEventListener('click', () => {
     if (display.innerText === '0') {
@@ -26,8 +27,9 @@ clearEntry.addEventListener('click', () => {
             updateDisplay('0');   
         }, 2000);
         memoryValue = 0;
-    } else if (initialValue !== '') {
+    } else if (memoryRecalled === true) {
         initialValue = '';
+        state = 'initial';
         updateDisplay('0');
     } else if (state === 'initial') {
         initialValue = '';
@@ -186,6 +188,8 @@ function memoryFunctions(pressedMemoryFunction) {
         display.innerText = memoryValue.toString();
     } else {
         display.innerText = memoryValue;
+        initialValue = memoryValue.toString();
+        memoryRecalled = true;
     };
 };
 
