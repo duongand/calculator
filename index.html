@@ -9,38 +9,45 @@
   <body>
     <div class="content-wrap">
       <div class="row-display">
-        <div class="display">Display</div>
+        <div id="display">0</div>
       </div>
 
       <div class="row">
-        <button>7</button>
-        <button>8</button>
-        <button>9</button>
-        <button>+</button>
+        <button>M+</button>
+        <button>M-</button>
+        <button>MR</button>
+        <button id="clear-entry">CE</button>
       </div>
 
       <div class="row">
-        <button>4</button>
-        <button>5</button>
-        <button>6</button>
-        <button>-</button>
+        <button class="numeric">7</button>
+        <button class="numeric">8</button>
+        <button class="numeric">9</button>
+        <button class="operations">+</button>
       </div>
 
       <div class="row">
-        <button>1</button>
-        <button>2</button>
-        <button>3</button>
-        <button>*</button>
+        <button class="numeric">4</button>
+        <button class="numeric">5</button>
+        <button class="numeric">6</button>
+        <button class="operations">-</button>
       </div>
 
       <div class="row">
-        <button>.</button>
-        <button>0</button>
-        <button>=</button>
-        <button>÷</button>
+        <button class="numeric">1</button>
+        <button class="numeric">2</button>
+        <button class="numeric">3</button>
+        <button class="operations">*</button>
+      </div>
+
+      <div class="row">
+        <button id="decimal">.</button>
+        <button class="numeric">0</button>
+        <button id="equals">=</button>
+        <button class="operations">÷</button>
       </div>
     </div>
 
-    <script src="" async defer></script>
+    <script src="./scripts/script.js" async defer></script>
   </body>
 </html>
