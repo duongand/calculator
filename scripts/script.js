@@ -7,24 +7,34 @@ const equals = document.getElementsByClassName('equals')[0];
 const buttons = document.querySelectorAll('button');
 const plusMinusDisplay = document.getElementById('plus-minus-display');
 const display = document.getElementById('display');
+const memoryButtons = document.getElementsByClassName('memory');
 
 let initialValue = '';
 let finalValue = '';
 let state = 'initial';
+let clearedOnce = false;
 let operation = NaN;
 let positiveNegative = '+';
 let lastPressed;
+let memoryValue = 0;
 
 clearEntry.addEventListener('click', () => {
     if (display.innerText === '0') {
         display.innerText = 'All cleared';
-        setTimeout(reset, 2000);
+        setTimeout(() => {
+            reset();
+            updateDisplay('0');   
+        }, 2000);
+        memoryValue = 0;
+    } else if (initialValue !== '') {
+        initialValue = '';
+        updateDisplay('0');
     } else if (state === 'initial') {
         initialValue = '';
-        updatedisplay('0');
+        updateDisplay('0');
     } else if (state === 'final') {
         finalValue = '';
-        updatedisplay('0');
+        updateDisplay('0');
     };
 });
 
@@ -45,14 +55,14 @@ decimal.addEventListener('click', (event) => {
         };
 
         initialValue += event.target.innerText;
-        updatedisplay(initialValue);
+        updateDisplay(initialValue);
     } else {
         if (finalValue.indexOf('.') > -1) {
             return;
         };
 
         finalValue += event.target.innerText;
-        updatedisplay(finalValue);
+        updateDisplay(finalValue);
     };
 });
 
@@ -72,13 +82,19 @@ for (let i = 0; i < buttons.length; i++) {
     });
 };
 
+for (let i = 0; i < memoryButtons.length; i++) {
+    memoryButtons[i].addEventListener('click', (event) => {
+        memoryFunctions(event.target.innerText);
+    });
+};
+
 function append(value) {
     if (state === 'initial') {
         initialValue += value;
-        updatedisplay(initialValue);
+        updateDisplay(initialValue);
     } else if (state === 'final') {
         finalValue += value;
-        updatedisplay(finalValue);
+        updateDisplay(finalValue);
     };
 };
 
@@ -122,7 +138,7 @@ function compute() {
     positiveNegative = '+';
     state = 'final';
     plusMinusDisplay.innerText = positiveNegative;
-    updatedisplay(initialValue);
+    updateDisplay(initialValue);
 };
 
 function flipSign() {
@@ -144,7 +160,7 @@ function setLastedPressed(button) {
     lastPressed = button;
 };
 
-function updatedisplay(value) {
+function updateDisplay(value) {
     if (value.length > 16) {
         // If numeric value exceeds a length of 21, the returned value is returned in scientific notation
         if (value.indexOf('e') > -1) {
@@ -161,10 +177,21 @@ function updatedisplay(value) {
     document.getElementById('display').innerText = value;
 }; 
 
+function memoryFunctions(pressedMemoryFunction) {
+    if (pressedMemoryFunction === 'M+') {
+        memoryValue += parseFloat(initialValue);
+        display.innerText = memoryValue.toString();
+    } else if (pressedMemoryFunction === 'M-') {
+        memoryValue += (-1 * parseFloat(initialValue));
+        display.innerText = memoryValue.toString();
+    } else {
+        display.innerText = memoryValue;
+    };
+};
+
 function reset() {
     initialValue = '';
     finalValue = '';
     operation = NaN;
     state = 'initial';
-    updatedisplay('0');
 };
