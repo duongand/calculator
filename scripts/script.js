@@ -1,130 +1,170 @@
-const clear_entry = document.getElementById('clear-entry');
-const numerical_buttons = document.getElementsByClassName('numeric');
-const decimal = document.getElementById('decimal');
+const clearEntry = document.getElementsByClassName('clear-entry')[0];
+const signButton = document.getElementsByClassName('plus-minus')[0];
+const numericalButtons = document.getElementsByClassName('numeric');
+const decimal = document.getElementsByClassName('decimal')[0];
 const operations = document.getElementsByClassName('operations');
-const equals = document.getElementById('equals');
-let initial_value = '';
-let final_value = '';
+const equals = document.getElementsByClassName('equals')[0];
+const buttons = document.querySelectorAll('button');
+const plusMinusDisplay = document.getElementById('plus-minus-display');
+const display = document.getElementById('display');
+
+let initialValue = '';
+let finalValue = '';
 let state = 'initial';
 let operation = NaN;
+let positiveNegative = '+';
+let lastPressed;
 
-clear_entry.addEventListener('click', () => {
-    // If display is empty, clear all values
-    if (display.innerText === '') {
-        initial_value = '';
-        final_value = '';
-        operation = NaN;
-        state = 'initial';
-
-        update_display('0');
-        console.log('All entries cleared');
-    };
-
-    // Clear only inital value or final value
-    if (state === 'initial') {
-        initial_value = '';
-        update_display('0');
+clearEntry.addEventListener('click', () => {
+    if (display.innerText === '0') {
+        display.innerText = 'All cleared';
+        setTimeout(reset, 2000);
+    } else if (state === 'initial') {
+        initialValue = '';
+        updatedisplay('0');
     } else if (state === 'final') {
-        final_value = '';
-        update_display('0');
+        finalValue = '';
+        updatedisplay('0');
     };
 });
 
-for (let i = 0; i < numerical_buttons.length; i++) {
-    numerical_buttons[i].addEventListener('click', (event) => {
+signButton.addEventListener('click', () => {
+    flipSign();
+});
+
+for (let i = 0; i < numericalButtons.length; i++) {
+    numericalButtons[i].addEventListener('click', (event) => {
         append(event.target.innerText);
     });
 };
 
 decimal.addEventListener('click', (event) => {
-
     if (state === 'initial') {
-        if (initial_value.indexOf('.') > -1) {
+        if (initialValue.indexOf('.') > -1) {
             return;
         };
 
-        initial_value += event.target.innerText;
-        update_display(initial_value);
+        initialValue += event.target.innerText;
+        updatedisplay(initialValue);
     } else {
-        if (final_value.indexOf('.') > -1) {
+        if (finalValue.indexOf('.') > -1) {
             return;
         };
 
-        final_value += event.target.innerText;
-        update_display(final_value);
+        finalValue += event.target.innerText;
+        updatedisplay(finalValue);
     };
 });
 
 for (let i = 0; i < operations.length; i++) {
     operations[i].addEventListener('click', (event) => {
-        set_operation(event.target.innerText);
+        setOperation(event.target.innerText);
     });
 };
 
 equals.addEventListener('click', () => {
-    compute(initial_value, final_value, operation);
+    compute(initialValue, finalValue, operation);
 });
+
+for (let i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', (event) => {
+        setLastedPressed(event.target);
+    });
+};
 
 function append(value) {
     if (state === 'initial') {
-        initial_value += value;
-        update_display(initial_value);
+        initialValue += value;
+        updatedisplay(initialValue);
     } else if (state === 'final') {
-        final_value += value;
-        update_display(final_value);
+        finalValue += value;
+        updatedisplay(finalValue);
     };
 };
 
-function set_operation(clicked_operation) {
-    // If an initial value isn't entered, do not set operation
-    if (initial_value === '') {
+function setOperation(clickedOperation) {
+    if (initialValue === '') {
         return;
-        // Set operation then change state to append to final value
     } else {
-        operation = clicked_operation;
+        initialValue = (parseFloat(positiveNegative + '1') * parseFloat(initialValue)).toString();
+        operation = clickedOperation;
+        positiveNegative = '+';
+        plusMinusDisplay.innerText = positiveNegative;
         state = 'final';
     };
 };
 
 function compute() {
-    // Do not compute if no values were entered into the calculator
-    if (initial_value === '' || final_value === '') {
+    if (initialValue === '' || finalValue === '') {
         return;
     };
 
     let temp;
     if (operation === '+') {
-        temp = parseFloat(initial_value) + parseFloat(final_value);
+        temp = parseFloat(initialValue) + parseFloat(positiveNegative + finalValue);
     } else if (operation === '-') {
-        temp = parseFloat(initial_value) - parseFloat(final_value);
+        temp = parseFloat(initialValue) - parseFloat(positiveNegative + finalValue);
     } else if (operation === '*') {
-        temp = parseFloat(initial_value) * parseFloat(final_value);
+        temp = parseFloat(initialValue) * parseFloat(positiveNegative + finalValue);
     } else if (operation === '÷') {
-        if (final_value === '0') {
-            document.getElementById('display').innerText = 'NaN';
-            // setInterval() to reset calculator
+        if (finalValue === '0') {
+            display.innerText = 'NaN';
+            setTimeout(reset, 3000);
             return;
         };
 
-        temp = parseFloat(initial_value) / parseFloat(final_value);
+        temp = parseFloat(initialValue) / parseFloat(positiveNegative + finalValue);
     };
 
-    initial_value = temp.toString();
-    final_value = '';
+    initialValue = temp.toString();
+    finalValue = '';
     operation = NaN;
+    positiveNegative = '+';
     state = 'final';
-    update_display(initial_value);
+    plusMinusDisplay.innerText = positiveNegative;
+    updatedisplay(initialValue);
 };
 
-function update_display(value) {
-    // Scientific notation for values over display width
+function flipSign() {
+    if (positiveNegative === '+') {
+        positiveNegative = '-';
+    } else {
+        positiveNegative = '+';
+    };
+
+    plusMinusDisplay.innerText = positiveNegative;
+};
+
+function setLastedPressed(button) {
+    if (lastPressed) {
+        lastPressed.removeAttribute('id');
+    };
+
+    button.setAttribute('id', 'active');
+    lastPressed = button;
+};
+
+function updatedisplay(value) {
     if (value.length > 16) {
-        if (value.indexOf('.') > -1) {
-            value = value.substring(0, 1) + '.' + value.substring(2, 5) + 'E+' + (value.length - value.indexOf('.')).toString();
-        } else {
-            value = value.substring(0, 1) + '.' + value.substring(1, 4) + 'E+' + (value.length - 1).toString();
+        // If numeric value exceeds a length of 21, the returned value is returned in scientific notation
+        if (value.indexOf('e') > -1) {
+            value = value.substring(0, 5) + value.substring(value.indexOf('e'), value.length);
+        // Value exceeds display length; however, does not have a decimal (positive value)
+        } else if (value.indexOf('.') === -1) {
+            value = value.substring(0, 1) + '.' + value.substring(2, 5) + 'e+' + (value.length - 2).toString();
+        // Value exceeds display length; however, is a decimal value
+        } else if (value.indexOf('.') > -1) {
+            value = value.substring(0, 16);
         };
     };
 
     document.getElementById('display').innerText = value;
+}; 
+
+function reset() {
+    initialValue = '';
+    finalValue = '';
+    operation = NaN;
+    state = 'initial';
+    updatedisplay('0');
 };
