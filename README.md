@@ -12,4 +12,4 @@ Anyone can solve simple mathematical equations; however, things become hard to r
 
 ### Author
 
-* **Anderson Duong** - Self-Teaching Programmer
+* **Anderson Duong** - Full-Stack Developer
