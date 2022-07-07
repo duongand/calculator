@@ -10,11 +10,11 @@ let initialValue = '',
     memoryValue = 0,
     memoryRecalled = false;
 
-document.getElementsByClassName('clear-entry')[0].addEventListener('click', () => {
+document.getElementById('clear-entry').addEventListener('click', () => {
     clearEntry();
 });
 
-document.getElementsByClassName('plus-minus')[0].addEventListener('click', () => {
+document.getElementById('plus-minus').addEventListener('click', () => {
     flipSign();
 });
 
@@ -25,7 +25,7 @@ for (const numericalButton of numericalButtons) {
     });
 };
 
-document.getElementsByClassName('decimal')[0].addEventListener('click', () => {
+document.getElementById('decimal').addEventListener('click', () => {
     appendDecimal();
 });
 
@@ -36,7 +36,7 @@ for (const operation of operations) {
     });
 };
 
-document.getElementsByClassName('equals')[0].addEventListener('click', () => {
+document.getElementById('equals').addEventListener('click', () => {
     compute(initialValue, finalValue, operation);
 });
 
@@ -53,7 +53,6 @@ for (const memoryButton of memoryButtons) {
         setMemoryFunction(event.target.innerText);
     });
 };
-
 
 function clearEntry() {
     if (display.innerText === '0') {
@@ -107,47 +106,42 @@ function appendDecimal() {
 };
 
 function setOperation(clickedOperation) {
-    if (initialValue === '') {
-        return;
-    } else {
-        initialValue = parseFloat(positiveNegative + initialValue);
-        operation = clickedOperation;
-        positiveNegative = '+';
-        plusMinusDisplay.innerText = positiveNegative;
-        state = 'final';
+    if (initialValue === '') return;
+    
+    initialValue = parseFloat(positiveNegative + initialValue);
+    operation = clickedOperation;
+    positiveNegative = '+';
+    plusMinusDisplay.innerText = positiveNegative;
+    state = 'final';
+};
+
+function doComputation() {
+    switch (operation) {
+        case '+':
+            return initialValue + parseFloat(positiveNegative + finalValue);
+        case '-':
+            return initialValue - parseFloat(positiveNegative + finalValue);
+        case '*':
+            return initialValue * parseFloat(positiveNegative + finalValue);
+        case '÷':
+            if (finalValue === '0') {
+                setTimeout(() => {
+                    clearAll();
+                    updateDisplay('0');
+                }, 1000);
+                return 'NaN';
+            };
+    
+            return parseFloat(initialValue) / parseFloat(positiveNegative + finalValue);
+        default:
+            return 'NaN';
     };
 };
 
 function compute() {
     if (initialValue === '' || finalValue === '') return;
 
-    let temp;
-    switch (operation) {
-        case '+':
-            temp = initialValue + parseFloat(positiveNegative + finalValue);
-            break;
-        case '-':
-            temp = initialValue - parseFloat(positiveNegative + finalValue);
-            break;
-        case '*':
-            temp = initialValue * parseFloat(positiveNegative + finalValue);
-            break;
-        case '÷':
-            if (finalValue === '0') {
-                display.innerText = 'NaN';
-                setTimeout(() => {
-                    clearAll();
-                    updateDisplay('0');
-                }, 3000);
-                return;
-            };
-    
-            temp = parseFloat(initialValue) / parseFloat(positiveNegative + finalValue);
-        default:
-            break;
-    };
-
-    initialValue = temp.toString();
+    initialValue = doComputation().toString();
     finalValue = '';
     operation = NaN;
     positiveNegative = '+';
@@ -193,7 +187,7 @@ function setMemoryFunction(pressedMemoryFunction) {
     if (pressedMemoryFunction === 'M+') {
         memoryValue += parseFloat(initialValue);
     } else if (pressedMemoryFunction === 'M-') {
-        memoryValue += (-1 * parseFloat(initialValue));
+        memoryValue -= parseFloat(initialValue);
     } else {
         initialValue = memoryValue.toString();
         memoryRecalled = true;
